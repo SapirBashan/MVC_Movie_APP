@@ -77,28 +77,7 @@ class TodoView(QMainWindow):
         # Set the model for the QListView
         self.todoList.setModel(self.controller.model)
 
-    # def searchMovie(self):
-    #     movie_name = self.movieEdit.text()
-    #     print(f"Movie name: {movie_name}")  # Print the movie name
-
-    #     movie_response = requests.get('https://localhost:7276/Movie/' + movie_name, headers={'accept': 'application/json'}, verify=False)
-    #     print(f"Response status code: {movie_response.status_code}")  # Print the status code
-
-    #     if movie_response.status_code == 200:  # Check if the request was successful
-    #         movie_data = movie_response.json()
-
-    #         self.movieLabel.setText(f"Title: {movie_data['title']}\nYear: {movie_data['year']}\nIMDB ID: {movie_data['imdbID']}\nType: {movie_data['type']}")
-
-    #         if movie_data['poster'] != 'N/A' and movie_data['poster'] is not None:  # Check if the poster URL is not 'N/A' and not None
-    #             data = requests.get(movie_data['poster']).content
-    #             pixmap = QPixmap()
-    #             pixmap.loadFromData(data)
-    #             self.posterLabel.setPixmap(pixmap)
-    #         else:
-    #             self.posterLabel.clear()  # Clear the QLabel if the poster URL is 'N/A' or None
-    #     else:
-    #         print(f"Error: {movie_response.text}")  # Print the error message
-    
+  
     def searchMovie(self):
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
