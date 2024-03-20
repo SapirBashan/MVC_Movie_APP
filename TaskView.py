@@ -41,6 +41,7 @@ class TodoView(QMainWindow):
         self.movieLabel = QLabel(self)
         self.posterLabel = QLabel(self)
 
+
         self.movieEdit.returnPressed.connect(self.searchMovie)
 
         self.layout.addWidget(self.movieEdit)
@@ -87,7 +88,32 @@ class TodoView(QMainWindow):
             print("Failed to fetch movie data")
 
     def updateMovieUI(self, movie_data):
-        self.movieLabel.setText(f"Title: {movie_data['title']}\nYear: {movie_data['year']}\nIMDB ID: {movie_data['imdbID']}\nType: {movie_data['type']}")
+        movie_details = ""
+        if movie_data['title'] != "N/A" and movie_data['title'] is not None:
+            movie_details += f"Title: {movie_data['title']}\n"
+        if movie_data['year'] != "N/A" and movie_data['year'] is not None:
+            movie_details += f"Year: {movie_data['year']}\n"
+        if movie_data['rated'] != "N/A" and movie_data['rated'] is not None:
+            if movie_data['rated'] == "R":
+                movie_details += f"Rated: SHIGETZ\n"
+            elif movie_data['rated'] == "PG-13" or movie_data['rated'] == "PG":
+                movie_details += f"Rated: BE-DI-AVAD\n"
+            elif movie_data['rated'] == "G":
+                movie_details += f"Rated: KOSHER\n"
+            else:
+                movie_details += f"Rated: {movie_data['rated']}\n"
+        if movie_data['type'] != "N/A" and movie_data['type'] is not None:
+            movie_details += f"Type: {movie_data['type']}\n"
+        if movie_data['plot'] != "N/A" and movie_data['plot'] is not None:
+            movie_details += f"Plot: {movie_data['plot']}\n"
+        if movie_data['imdbRating'] != "N/A" and movie_data['imdbRating'] is not None:
+            movie_details += f"IMDB Rating: {movie_data['imdbRating']}\n"
+
+        #if there is not movie data then write no movie data
+        if movie_details == "":
+            movie_details = "No movie data"
+        self.movieLabel.setText(movie_details)     
+
         if movie_data['poster'] != 'N/A' and movie_data['poster'] is not None:
             data = requests.get(movie_data['poster']).content
             pixmap = QPixmap()
@@ -95,3 +121,5 @@ class TodoView(QMainWindow):
             self.posterLabel.setPixmap(pixmap)
         else:
             self.posterLabel.clear()
+    
+    

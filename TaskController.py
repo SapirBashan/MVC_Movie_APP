@@ -40,3 +40,5 @@ class TodoController:
         
     def searchMovieController(self, movie_name):
         return self.model.fetchMovieData(movie_name)
+    
+    
