@@ -1,10 +1,9 @@
 import requests
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QListView, QWidget, QListWidget, QLabel, QListWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QListView, QWidget, QListWidget, QLabel, QListWidgetItem, QGridLayout
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap, QIcon
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 
 class TodoView(QMainWindow): 
     def __init__(self):
@@ -18,14 +17,44 @@ class TodoView(QMainWindow):
         self.removeButton = QPushButton("Remove", self)
         self.searchButton = QPushButton("Search", self)
         self.movieLabel = QLabel(self)
-        self.posterLabel = QLabel(self)  # Define posterLabel here
+        self.posterLayout = QGridLayout()  # Define posterLayout as a QGridLayout
 
         self.layout.addWidget(self.movieEdit)
         self.layout.addWidget(self.addButton)
         self.layout.addWidget(self.removeButton)
         self.layout.addWidget(self.searchButton)
         self.layout.addWidget(self.movieLabel)
-        self.layout.addWidget(self.posterLabel)  # Add posterLabel to the layout
+        self.layout.addLayout(self.posterLayout)  # Add posterLayout to the main layout
+
+    def updateMovieList(self, movie_posters):
+        # Clear existing posters
+        for i in reversed(range(self.posterLayout.count())):
+            self.posterLayout.itemAt(i).widget().setParent(None)
+
+        row = 0
+        col = 0
+        for poster_url in movie_posters:
+            pixmap = self.get_pixmap_from_url(poster_url)
+            if pixmap:
+                label = QLabel()
+                label.setPixmap(pixmap)
+                self.posterLayout.addWidget(label, row, col)
+                col += 1
+                if col >= 3:  # Adjust the number of columns based on your preference
+                    row += 1
+                    col = 0
+
+    def get_pixmap_from_url(self, url):
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                pixmap = QPixmap()
+                pixmap.loadFromData(response.content)
+                return pixmap
+        except Exception as e:
+            print(f"Error loading image from URL: {e}")
+        return None
+
 
     def setController(self, controller):
         self.controller = controller
@@ -35,21 +64,7 @@ class TodoView(QMainWindow):
         #method to update the movie list when GetAllMoviesController is called
         self.movieList = QListWidget(self)
         self.layout.addWidget(self.movieList)
-
-    def updateMovieList(self, movie_posters):
-        self.movieList.clear()
-        #show in the list all the movie posters that are fetched
-        for poster in movie_posters:
-            item = QListWidgetItem()
-            data = requests.get(poster).content
-            pixmap = QPixmap()
-            pixmap.loadFromData(data)
-            icon = QIcon(pixmap)  # Convert QPixmap to QIcon
-            item.setIcon(icon)
-            self.movieList.addItem(item)
        
-
-
     def addMovie(self):
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
@@ -70,6 +85,7 @@ class TodoView(QMainWindow):
         movie_data = self.controller.searchMovieController(movie_name)
         if movie_data:
             self.updateMovieUI(movie_data)
+            self.updateMovieList([movie_data['poster']])  # Update poster layout with the poster URL
         else:
             self.movieLabel.setText(f"Failed to fetch movie data for {movie_name}")
 
@@ -106,6 +122,6 @@ class TodoView(QMainWindow):
             data = requests.get(movie_data['poster']).content
             pixmap = QPixmap()
             pixmap.loadFromData(data)
-            self.posterLabel.setPixmap(pixmap)
+            self.movieLabel.setPixmap(pixmap)
         else:
-            self.posterLabel.clear()
+            self.movieLabel.clear()
