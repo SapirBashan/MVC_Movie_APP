@@ -27,3 +27,10 @@ class TodoController:
         if movies_data:
             movie_poster = [movie['poster'] for movie in movies_data]
             self.view.updateMovieList(movie_poster)
+                
+    def getMovieDetailsByPosterController(self, movie_poster_url):
+        movies_data = self.model.GetAllMovies()
+        if movies_data:
+            relevant_movies_data = [movie for movie in movies_data if movie['poster'] == movie_poster_url]
+        if relevant_movies_data:
+            return relevant_movies_data

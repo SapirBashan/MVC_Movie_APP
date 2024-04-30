@@ -29,6 +29,7 @@ class TodoView(QMainWindow):
         self.layout.addWidget(self.movieLabel)
         self.layout.addLayout(self.posterLayout)  # Add posterLayout to the main layout
 
+        self.controller = None
         apply_stylesheet(self, theme='dark_blue.xml')
 
     def updateMovieList(self, movie_posters):
@@ -43,6 +44,7 @@ class TodoView(QMainWindow):
             if pixmap:
                 label = QLabel()
                 label.setPixmap(pixmap)
+                label.mouseDoubleClickEvent = lambda event, url=poster_url: self.showMovieDetails(url)  # Double-click event handler
                 self.posterLayout.addWidget(label, row, col)
                 col += 1
                 if col >= 3:  # Adjust the number of columns based on your preference
@@ -60,16 +62,12 @@ class TodoView(QMainWindow):
             print(f"Error loading image from URL: {e}")
         return None
 
-
     def setController(self, controller):
         self.controller = controller
         self.addButton.clicked.connect(self.addMovie)
         self.removeButton.clicked.connect(self.removeMovie)
         self.searchButton.clicked.connect(self.searchMovie)
-        #method to update the movie list when GetAllMoviesController is called
-        self.movieList = QListWidget(self)
-        self.layout.addWidget(self.movieList)
-       
+
     def addMovie(self):
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
@@ -116,10 +114,9 @@ class TodoView(QMainWindow):
         if movie_data['imdbRating'] != "N/A" and movie_data['imdbRating'] is not None:
             movie_details += f"IMDB Rating: {movie_data['imdbRating']}\n"
 
-        #if there is not movie data then write no movie data
         if movie_details == "":
             movie_details = "No movie data"
-        #make it so if the movie title is to long it will go to the next line
+        
         self.movieLabel.setWordWrap(True)
         self.movieLabel.setText(movie_details)
 
@@ -130,3 +127,10 @@ class TodoView(QMainWindow):
             self.movieLabel.setPixmap(pixmap)
         else:
             self.movieLabel.clear()
+
+    def showMovieDetails(self, poster_url):
+        movie_data = self.controller.getMovieDetailsByPosterController(poster_url)
+        if movie_data:
+            self.updateMovieUI(movie_data)
+        else:
+            self.movieLabel.setText("Failed to fetch movie details")
