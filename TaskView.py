@@ -1,91 +1,70 @@
-# TaskView.py
 import requests
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QListView, QWidget, QListWidget, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Create a view class that inherits from QMainWindow
-# The view class will have a setController method that takes the controller as an argument
-# The setController method will connect the signals from the view to the controller
-# The view class will have methods to add, delete, and complete a task
+
 class TodoView(QMainWindow): 
-
     def __init__(self):
         super().__init__()
-        
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
-
         self.layout = QVBoxLayout(self.central_widget)
 
-        self.todoEdit = QLineEdit(self)
-        self.addButton = QPushButton("Add", self)
-        self.todoList = QListView(self)
-        self.deleteButton = QPushButton("Delete", self)
-        self.completeButton = QPushButton("Complete", self)
-        
-        self.todoEdit.returnPressed.connect(self.addTodo)
-
-        self.todoList.setVisible(True)  # Make sure the list is visible
-
-        self.layout.addWidget(self.todoEdit)
-        self.layout.addWidget(self.addButton)
-        self.layout.addWidget(self.todoList)
-        self.layout.addWidget(self.deleteButton)
-        self.layout.addWidget(self.completeButton)
-
-        #**************************************************************************#
-
         self.movieEdit = QLineEdit(self)
+        self.addButton = QPushButton("Add", self)
+        self.removeButton = QPushButton("Remove", self)
         self.searchButton = QPushButton("Search", self)
         self.movieLabel = QLabel(self)
-        self.posterLabel = QLabel(self)
-
-
-        self.movieEdit.returnPressed.connect(self.searchMovie)
+        self.posterLabel = QLabel(self)  # Define posterLabel here
 
         self.layout.addWidget(self.movieEdit)
+        self.layout.addWidget(self.addButton)
+        self.layout.addWidget(self.removeButton)
         self.layout.addWidget(self.searchButton)
         self.layout.addWidget(self.movieLabel)
-        self.layout.addWidget(self.posterLabel)
-        #**************************************************************************#
-    
+        self.layout.addWidget(self.posterLabel)  # Add posterLabel to the layout
 
     def setController(self, controller):
-            self.addButton.clicked.connect(self.addTodo)
-            self.deleteButton.clicked.connect(self.deleteTodo)
-            self.completeButton.clicked.connect(self.completeTodo)
-            self.searchButton.clicked.connect(self.searchMovie)
+        self.controller = controller
+        self.addButton.clicked.connect(self.addMovie)
+        self.removeButton.clicked.connect(self.removeMovie)
+        self.searchButton.clicked.connect(self.searchMovie)
+        #method to update the movie list when GetAllMoviesController is called
+        self.movieList = QListWidget(self)
+        self.layout.addWidget(self.movieList)
 
-            self.controller = controller
+    def updateMovieList(self, movie_titles):
+        self.movieList.clear()
+        #now we will change the movie list to the new movie list
+        for movie in movie_titles:
+            self.movieList.addItem(movie)
 
-    def addTodo(self):
-        text = self.todoEdit.text()
-        if text:
-            self.controller.addTodo(text)
-            self.todoEdit.clear()
 
-    def deleteTodo(self):
-        index = self.todoList.currentIndex()
-        if index.isValid():
-            self.controller.deleteTodo(index)
+    def addMovie(self):
+        movie_name = self.movieEdit.text()
+        movie_data = self.controller.searchMovieController(movie_name)
+        if self.controller.addMovieController(movie_data):
+            self.movieLabel.setText(f"Movie {movie_name} added successfully")
+        else:
+            self.movieLabel.setText(f"Failed to add movie {movie_name}")
 
-    def completeTodo(self):
-        index = self.todoList.currentIndex()
-        if index.isValid():
-            self.controller.completeTodo(index)
+    def removeMovie(self):
+        movie_name = self.movieEdit.text()
+        if self.controller.removeMovieController(movie_name):
+            self.movieLabel.setText(f"Movie {movie_name} removed successfully")
+        else:
+            self.movieLabel.setText(f"Failed to remove movie {movie_name}")
 
-        # Set the model for the QListView
-        self.todoList.setModel(self.controller.model)
-
-  
     def searchMovie(self):
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
         if movie_data:
             self.updateMovieUI(movie_data)
         else:
-            print("Failed to fetch movie data")
+            self.movieLabel.setText(f"Failed to fetch movie data for {movie_name}")
 
     def updateMovieUI(self, movie_data):
         movie_details = ""
@@ -112,7 +91,9 @@ class TodoView(QMainWindow):
         #if there is not movie data then write no movie data
         if movie_details == "":
             movie_details = "No movie data"
-        self.movieLabel.setText(movie_details)     
+        #make it so if the movie title is to long it will go to the next line
+        self.movieLabel.setWordWrap(True)
+        self.movieLabel.setText(movie_details)
 
         if movie_data['poster'] != 'N/A' and movie_data['poster'] is not None:
             data = requests.get(movie_data['poster']).content
@@ -121,5 +102,3 @@ class TodoView(QMainWindow):
             self.posterLabel.setPixmap(pixmap)
         else:
             self.posterLabel.clear()
-    
-    

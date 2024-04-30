@@ -1,46 +1,50 @@
-
 # TaskModel.py
-from PyQt6.QtCore import Qt, QModelIndex
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
-from PyQt6.QtCore import QAbstractListModel
 import requests
 
-class TodoModel(QAbstractListModel):
-    def __init__(self, todos=None):
-        super().__init__()
-        self.todos = todos or []
+class TodoModel:
+    def __init__(self):
+        pass
+    
+    #post
+    def addMovie(self, movie_data):
+        formatted_data = {
+            "title": movie_data['title'],
+            "year": movie_data['year'],
+            "imdbID": movie_data['imdbID'],
+            "rated": movie_data['rated'],
+            "type": movie_data['type'],
+            "poster": movie_data['poster'],
+            "plot": movie_data['plot'],
+            "imdbRating": movie_data['imdbRating']
+        }
+        response = requests.post(f'https://localhost:7276/api/MovieValue', json=formatted_data, verify=False)
+        return response.status_code == 201  # Check for the correct status code for creation
 
-    def data(self, index, role):
-        if role == Qt.ItemDataRole.DisplayRole:
-            _, text = self.todos[index.row()]
-            return text
-        if role == Qt.ItemDataRole.CheckStateRole:
-            status, _ = self.todos[index.row()]
-            return Qt.CheckState.Checked if status else Qt.CheckState.Unchecked
+    #delete
+    def removeMovie(self, movie_name):
+        response = requests.delete(f'https://localhost:7276/api/MovieValue/{movie_name}', verify=False)
+        return response.status_code == 200
 
-    def rowCount(self, index):
-        return len(self.todos)
-
-    def insertRows(self, position, rows, index=QModelIndex()):
-        self.beginInsertRows(index, position, position + rows - 1)
-        for _ in range(rows):
-            self.todos.insert(position, (False, ""))
-        self.endInsertRows()
-        return True
-
-    def removeRows(self, position, rows, index=QModelIndex()):
-        self.beginRemoveRows(index, position, position + rows - 1)
-        for _ in range(rows):
-            del self.todos[position]
-        self.endRemoveRows()
-        return True
-
+    #fetch from API
     def fetchMovieData(self, movie_name):
-        movie_response = requests.get('https://localhost:7276/Movie/' + movie_name, headers={'accept': 'application/json'}, verify=False)
-        print(f"Response status code: {movie_response.status_code}")  # Print the status code
-
-        if movie_response.status_code == 200:  # Check if the request was successful
-            return movie_response.json()
+        response = requests.get(f'https://localhost:7276/Movie/{movie_name}', verify=False)
+        if response.status_code == 200:
+            return response.json()
         else:
-            print(f"Error: {movie_response.text}")  # Print the error message
+            return None
+        
+    #get /Get All
+    def GetAllMovies(self):
+        response = requests.get(f'https://localhost:7276/api/MovieValue', verify=False)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
+        
+    #Get /Get by Title
+    def GetMovieByTitle(self, movie_name):
+        response = requests.get(f'https://localhost:7276/api/MovieValue/{movie_name}', verify=False)
+        if response.status_code == 200:
+            return response.json()
+        else:
             return None
