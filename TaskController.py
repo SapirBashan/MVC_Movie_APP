@@ -16,7 +16,7 @@ class TodoController:
         #if the movie is removed successfully, update the movie list
         if self.model.removeMovie(movie_name):
             self.GetAllMoviesController()
-            return True
+            
         
 
     def searchMovieController(self, movie_name):
@@ -25,5 +25,5 @@ class TodoController:
     def GetAllMoviesController(self):
         movies_data = self.model.GetAllMovies()
         if movies_data:
-            movie_titles = [movie['title'] for movie in movies_data]
-            self.view.updateMovieList(movie_titles)
+            movie_poster = [movie['poster'] for movie in movies_data]
+            self.view.updateMovieList(movie_poster)

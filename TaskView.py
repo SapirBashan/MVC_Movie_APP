@@ -1,7 +1,7 @@
 import requests
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QListView, QWidget, QListWidget, QLabel
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QListView, QWidget, QListWidget, QLabel, QListWidgetItem
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QIcon
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -36,10 +36,18 @@ class TodoView(QMainWindow):
         self.movieList = QListWidget(self)
         self.layout.addWidget(self.movieList)
 
-    def updateMovieList(self, movie_titles):
+    def updateMovieList(self, movie_posters):
         self.movieList.clear()
-        #now we will change the movie list to the new movie list
-        self.movieList.addItems(movie_titles)
+        #show in the list all the movie posters that are fetched
+        for poster in movie_posters:
+            item = QListWidgetItem()
+            data = requests.get(poster).content
+            pixmap = QPixmap()
+            pixmap.loadFromData(data)
+            icon = QIcon(pixmap)  # Convert QPixmap to QIcon
+            item.setIcon(icon)
+            self.movieList.addItem(item)
+       
 
 
     def addMovie(self):
