@@ -39,8 +39,7 @@ class TodoView(QMainWindow):
     def updateMovieList(self, movie_titles):
         self.movieList.clear()
         #now we will change the movie list to the new movie list
-        for movie in movie_titles:
-            self.movieList.addItem(movie)
+        self.movieList.addItems(movie_titles)
 
 
     def addMovie(self):
