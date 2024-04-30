@@ -3,9 +3,8 @@ from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QL
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap, QIcon
 import urllib3
+#from qt_material import apply_stylesheet
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-from qt_material import apply_stylesheet
 
 
 class TodoView(QMainWindow): 
@@ -29,8 +28,11 @@ class TodoView(QMainWindow):
         self.layout.addWidget(self.movieLabel)
         self.layout.addLayout(self.posterLayout)  # Add posterLayout to the main layout
 
+        # Apply a theme to the application
+        #apply_stylesheet(self.app, theme='dark_blue.xml')
+        # Set controller
         self.controller = None
-        apply_stylesheet(self, theme='dark_blue.xml')
+
 
     def updateMovieList(self, movie_posters):
         # Clear existing posters
@@ -128,9 +130,12 @@ class TodoView(QMainWindow):
         else:
             self.movieLabel.clear()
 
-    def showMovieDetails(self, poster_url):
-        movie_data = self.controller.getMovieDetailsByPosterController(poster_url)
-        if movie_data:
+    def showMovieDetails(self, url):
+        movie_data = self.controller.getMovieDetailsByPosterController(url)
+        if isinstance(movie_data, list):
+            for movie in movie_data:
+                self.updateMovieUI(movie)
+        elif isinstance(movie_data, dict):
             self.updateMovieUI(movie_data)
         else:
-            self.movieLabel.setText("Failed to fetch movie details")
+            print(f"Unexpected type {type(movie_data)} for movie_data")
