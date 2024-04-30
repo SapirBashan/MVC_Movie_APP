@@ -5,6 +5,9 @@ from PyQt6.QtGui import QPixmap, QIcon
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+from qt_material import apply_stylesheet
+
+
 class TodoView(QMainWindow): 
     def __init__(self):
         super().__init__()
@@ -25,6 +28,8 @@ class TodoView(QMainWindow):
         self.layout.addWidget(self.searchButton)
         self.layout.addWidget(self.movieLabel)
         self.layout.addLayout(self.posterLayout)  # Add posterLayout to the main layout
+
+        apply_stylesheet(self, theme='dark_blue.xml')
 
     def updateMovieList(self, movie_posters):
         # Clear existing posters
