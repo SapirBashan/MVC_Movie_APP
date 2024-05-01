@@ -26,7 +26,7 @@ class TodoController:
         movies_data = self.model.GetAllMovies()
         if movies_data:
             movie_poster = [movie['poster'] for movie in movies_data]
-            self.view.updateMovieList(movie_poster)
+            self.view.todoView.updateMovieList(movie_poster)
                 
     def getMovieDetailsByPosterController(self, movie_poster_url):
         movies_data = self.model.GetAllMovies()

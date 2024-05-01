@@ -1,14 +1,13 @@
-# main.py
-import sys
-from PyQt6.QtWidgets import QApplication
+from TaskView import TaskView
 from TaskController import TodoController
 from TaskModel import TodoModel
-from TaskView import TodoView
+from PyQt6.QtWidgets import QApplication
+import sys
 
 def main():
     app = QApplication(sys.argv)
     model = TodoModel()
-    view = TodoView()
+    view = TaskView()  # Create an instance of TaskView instead of TodoView
     controller = TodoController(model, view)
     view.setController(controller)  # Set the controller before showing the view
     view.show()
