@@ -1,6 +1,6 @@
 import requests
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout, QScrollArea, QSizePolicy, QApplication,QHBoxLayout
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QFont
 from PyQt6.QtCore import Qt
 import urllib3
 
@@ -18,23 +18,33 @@ class TodoView(QMainWindow):
         self.top_layout = QHBoxLayout()
 
         self.movieEdit = QLineEdit(self)
-        # Set the maximum width of the search bar
-        self.movieEdit.setMaximumWidth(200)
+        self.movieEdit.setMaximumWidth(300)
+        # Set the style and placeholder text of the search bar
+        self.movieEdit.setStyleSheet("border: 1px solid white;")
+        self.movieEdit.setPlaceholderText("Enter movie")
 
         self.addButton = QPushButton("Add", self)
         self.removeButton = QPushButton("Remove", self)
         self.searchButton = QPushButton("Search", self)
-        self.refreshButton = QPushButton("Refresh", self)
+        self.refreshButton = QPushButton("Back", self)
         self.refreshButton.clicked.connect(self.refresh)
 
-        # Add the search bar and buttons to the top layout
+        # Set the style and font of the buttons
+        button_font = QFont('Arial', 10)
+        button_style = "border: 1px solid white;"
+        for button in [self.addButton, self.removeButton, self.searchButton, self.refreshButton]:
+            button.setFont(button_font)
+            button.setStyleSheet(button_style)
+
         self.top_layout.addWidget(self.movieEdit)
         self.top_layout.addWidget(self.searchButton)
         self.top_layout.addWidget(self.addButton)
-        self.top_layout.addWidget(self.removeButton)  # Add the remove button to the top layout
+        self.top_layout.addWidget(self.removeButton)
         self.top_layout.addWidget(self.refreshButton)
 
         self.movieLabel = QLabel(self)
+        self.movieLabel.setFont(QFont('Arial', 14))
+
         self.posterLayout = QGridLayout()  
 
         self.posterWidget = QWidget()
@@ -44,9 +54,7 @@ class TodoView(QMainWindow):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setWidget(self.posterWidget)
 
-        # Add the top layout to the main layout
         self.layout.addLayout(self.top_layout)
-
         self.layout.addWidget(self.scrollArea)
         self.layout.addWidget(self.movieLabel)
 
