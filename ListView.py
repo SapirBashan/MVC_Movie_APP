@@ -1,5 +1,5 @@
 import requests
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout, QScrollArea, QSizePolicy, QApplication
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout, QScrollArea, QSizePolicy, QApplication,QHBoxLayout
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 import urllib3
@@ -14,12 +14,25 @@ class TodoView(QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.layout = QVBoxLayout(self.central_widget)
 
+        # Create a horizontal layout for the top bar
+        self.top_layout = QHBoxLayout()
+
         self.movieEdit = QLineEdit(self)
+        # Set the maximum width of the search bar
+        self.movieEdit.setMaximumWidth(200)
+
         self.addButton = QPushButton("Add", self)
         self.removeButton = QPushButton("Remove", self)
         self.searchButton = QPushButton("Search", self)
         self.refreshButton = QPushButton("Refresh", self)
         self.refreshButton.clicked.connect(self.refresh)
+
+        # Add the search bar and buttons to the top layout
+        self.top_layout.addWidget(self.movieEdit)
+        self.top_layout.addWidget(self.searchButton)
+        self.top_layout.addWidget(self.addButton)
+        self.top_layout.addWidget(self.removeButton)  # Add the remove button to the top layout
+        self.top_layout.addWidget(self.refreshButton)
 
         self.movieLabel = QLabel(self)
         self.posterLayout = QGridLayout()  
@@ -31,12 +44,10 @@ class TodoView(QMainWindow):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setWidget(self.posterWidget)
 
-        self.layout.addWidget(self.refreshButton, alignment=Qt.AlignmentFlag.AlignRight)
+        # Add the top layout to the main layout
+        self.layout.addLayout(self.top_layout)
+
         self.layout.addWidget(self.scrollArea)
-        self.layout.addWidget(self.movieEdit)
-        self.layout.addWidget(self.addButton)
-        self.layout.addWidget(self.removeButton)
-        self.layout.addWidget(self.searchButton)
         self.layout.addWidget(self.movieLabel)
 
         self.posterWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -98,7 +109,7 @@ class TodoView(QMainWindow):
                 label.mouseDoubleClickEvent = lambda event, url=poster_url: self.showMovieDetails(url)  # Double-click event handler
                 self.posterLayout.addWidget(label, row, col)
                 col += 1
-                if col >= 3:  # Adjust the number of columns based on your preference
+                if col >= 4:  # Adjust the number of columns based on your preference
                     row += 1
                     col = 0
 
