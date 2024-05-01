@@ -1,10 +1,15 @@
 import requests
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QLineEdit, QLabel, QWidget, QGridLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout, QScrollArea, QSizePolicy, QTabWidget
 from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
 import urllib3
+import qdarkstyle
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+app = QApplication([])
+app.setStyleSheet(qdarkstyle.load_stylesheet())
 
 class TodoView(QMainWindow): 
     def __init__(self):
@@ -17,17 +22,63 @@ class TodoView(QMainWindow):
         self.addButton = QPushButton("Add", self)
         self.removeButton = QPushButton("Remove", self)
         self.searchButton = QPushButton("Search", self)
+        #refresh button with a refresh icon
+        self.refreshButton = QPushButton("Refresh", self)
+        self.refreshButton.clicked.connect(self.refresh)
+        self.refreshButton.setStyleSheet("""
+            QPushButton {
+                border: 2px solid #555;
+                border-radius: 15px;  /* make the button circular */
+                padding: 5px;
+                background-color: #333;
+                color: #fff;
+            }
+            QPushButton:hover {
+                border: 2px solid #888;
+                background-color: #555;
+            }
+        """)
+
+        # Add the refresh button to the layout
+        self.layout.addWidget(self.refreshButton, alignment=Qt.AlignmentFlag.AlignRight)
+
         self.movieLabel = QLabel(self)
         self.posterLayout = QGridLayout()  
+
+        # Create a QWidget for the posters and set its layout
+        self.posterWidget = QWidget()
+        self.posterWidget.setLayout(self.posterLayout)
+
+        # Create a QScrollArea and set its widget
+        self.scrollArea = QScrollArea()
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setWidget(self.posterWidget)
+
+        # Add the scroll area to the main layout
+        self.layout.addWidget(self.scrollArea)
 
         self.layout.addWidget(self.movieEdit)
         self.layout.addWidget(self.addButton)
         self.layout.addWidget(self.removeButton)
         self.layout.addWidget(self.searchButton)
         self.layout.addWidget(self.movieLabel)
-        self.layout.addLayout(self.posterLayout)  
 
+        # Set the size policy of the poster widget to expand to fill the scroll area
+        self.posterWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.controller = None
+
+        # self.tabWidget = QTabWidget()
+
+        # # Create two QWidget instances for the tabs
+        # self.tab1 = QWidget()
+        # self.tab2 = QWidget()
+
+        # # Add the widgets to the QTabWidget
+        # self.tabWidget.addTab(self.tab1, "Tab 1")
+        # self.tabWidget.addTab(self.tab2, "Tab 2")
+
+        # # Set the QTabWidget as the central widget
+        # self.setCentralWidget(self.tabWidget)
 
     def updateMovieUI(self, movie_data, flag):
         movie_details = ""
@@ -142,3 +193,8 @@ class TodoView(QMainWindow):
             self.updateMovieUI(movie_data, True)
         else:
             print(f"Unexpected type {type(movie_data)} for movie_data")
+
+    def refresh(self):
+        self.controller.GetAllMoviesController()
+        self.movieLabel.setText("Movies refreshed successfully")
+        self.movieEdit.clear()
