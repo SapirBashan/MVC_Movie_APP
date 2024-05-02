@@ -41,7 +41,9 @@ class TodoView(QMainWindow):
         self.top_layout.addWidget(self.removeButton)
         self.top_layout.addWidget(self.refreshButton)
 
-        self.movieLabel = QLabel(self)
+        #make the deafult movieLabel to be "click on a movie to add a comment to it\n" + 
+        #"Double click on a movie to see the movie details"
+        self.movieLabel = QLabel("Double click on a movie to add a comment to it\n" + "click on a movie to see the movie details")
         self.movieLabel.setFont(QFont('Arial', 14))
         self.movieLabel.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)  # Enable text selection with mouse
 
@@ -62,6 +64,8 @@ class TodoView(QMainWindow):
         self.controller = None
 
     def updateMovieUI(self, movie_data, flag):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
         movie_details = ""
         if movie_data['title'] != "N/A" and movie_data['title'] is not None:
             movie_details += f"Title: {movie_data['title']}\n"
@@ -82,6 +86,9 @@ class TodoView(QMainWindow):
             movie_details += f"Plot: {movie_data['plot']}\n"
         if movie_data['imdbRating'] != "N/A" and movie_data['imdbRating'] is not None:
             movie_details += f"IMDB Rating: {movie_data['imdbRating']}\n"
+        if movie_data['comment'] != "N/A" and movie_data['comment'] is not None:
+            movie_details += f"Comment: {movie_data['comment']}\n"
+
 
         if movie_details == "":
             movie_details = "No movie data"
@@ -103,6 +110,8 @@ class TodoView(QMainWindow):
             self.movieLabel.clear()
 
     def updateMovieList(self, movie_posters):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
         # Clear existing posters
         for i in reversed(range(self.posterLayout.count())):
             self.posterLayout.itemAt(i).widget().setParent(None)
@@ -114,7 +123,9 @@ class TodoView(QMainWindow):
             if pixmap:
                 label = QLabel()
                 label.setPixmap(pixmap)
-                label.mouseDoubleClickEvent = lambda event, url=poster_url: self.showMovieDetails(url)  # Double-click event handler
+                label.mousePressEvent = lambda event, url=poster_url: self.showMovieDetails(url)  # Double-click event handler
+                label.mouseDoubleClickEvent = lambda event, url=poster_url: self.addComment(url)  # Right-click event handler
+
                 self.posterLayout.addWidget(label, row, col)
                 col += 1
                 if col >= 4:  # Adjust the number of columns based on your preference
@@ -139,6 +150,8 @@ class TodoView(QMainWindow):
         self.searchButton.clicked.connect(self.searchMovie)
 
     def addMovie(self):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
         if self.controller.addMovieController(movie_data):
@@ -147,6 +160,8 @@ class TodoView(QMainWindow):
             self.movieLabel.setText(f"Failed to add movie {movie_name}")
 
     def removeMovie(self):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
         movie_name = self.movieEdit.text()
         if self.controller.removeMovieController(movie_name):
             self.movieLabel.setText(f"Movie {movie_name} removed successfully")
@@ -154,6 +169,8 @@ class TodoView(QMainWindow):
             self.movieLabel.setText(f"Failed to remove movie {movie_name}")
 
     def searchMovie(self):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
         if movie_data:
@@ -163,6 +180,8 @@ class TodoView(QMainWindow):
             self.movieLabel.setText(f"Failed to fetch movie data for {movie_name}")
 
     def showMovieDetails(self, url):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
         movie_data = self.controller.getMovieDetailsByPosterController(url)
         if isinstance(movie_data, list):
             for movie in movie_data:
@@ -175,7 +194,45 @@ class TodoView(QMainWindow):
         else:
             print(f"Unexpected type {type(movie_data)} for movie_data")
 
+    #by the postet url we get the movie name and add a option to write a comment to the movie
+    def addComment(self,url):
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.show()
+        movie_data = self.controller.getMovieDetailsByPosterController(url)
+        movie_Title = movie_data[0]['title']
+        movie_comment = movie_data[0]['comment']
+
+        self.movieLabel.setText("Title: " + movie_Title)
+        
+        if not hasattr(self, 'commentEdit'):
+            self.commentEdit = QLineEdit(self)
+            self.commentEdit.setMaximumWidth(300)
+            self.commentEdit.setStyleSheet("border: 1px solid white;")
+            self.layout.addWidget(self.commentEdit)
+        else:
+            self.commentEdit.clear()
+        if movie_comment != "N/A" and movie_comment is not None:
+            self.commentEdit.setPlaceholderText(movie_comment)
+        else:
+            self.commentEdit.setPlaceholderText("Enter comment")
+        self.movieEdit.clear()
+        #when i press enter the function updateComment is called
+        self.commentEdit.returnPressed.connect(lambda: self.updateComment(movie_Title, self.commentEdit.text(),movie_data))
+
+    
+    def updateComment(self,Titel,Comment,movie_data):
+        if self.controller.updateCommentController(Titel,Comment,movie_data):
+            self.movieLabel.setText("Comment updated successfully")
+        else:
+            self.movieLabel.setText("Failed to update comment")
+        if hasattr(self, 'commentEdit'):
+            self.commentEdit.hide()
+
+    
     def refresh(self):
         self.controller.GetAllMoviesController()
         self.movieLabel.setText("Movies refreshed successfully")
         self.movieEdit.clear()
+
+    
+        

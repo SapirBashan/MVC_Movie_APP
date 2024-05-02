@@ -71,3 +71,15 @@ class TodoModel:
                 return None
         else:
             return None
+        
+    # PUT
+    def updateComment(self, title, comment,movie_data):
+        url = f'https://localhost:7276/api/MovieValue?title={title}'
+        headers = {
+            'accept': '*/*',
+            'Content-Type': 'application/json'
+        }
+        data = f'"{comment}"'
+        response = requests.put(url, headers=headers, data=data, verify=False)
+        return response.status_code == 200  # Check for the correct status code for successful update
+

@@ -51,5 +51,9 @@ class TodoController:
             movieRecommendation = self.model.GetMovieRecommendation(ModelName, movieTitles)
             return movieRecommendation
 
-            
+    def updateCommentController(self, Title, Comment,movie_data):
+        #this function updates the comment of a movie
+        if self.model.updateComment(Title, Comment,movie_data):
+            return True
+        return False
 
