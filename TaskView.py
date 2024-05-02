@@ -1,13 +1,13 @@
 from PyQt6.QtWidgets import QMainWindow, QTabWidget, QApplication, QWidget, QVBoxLayout
 #######################################################################################
-#import qdarkstyle
+import qdarkstyle
 
 from ListView import TodoView
 from ChatView import ChatView
 
 app = QApplication([])
 ############################################################################################
-#app.setStyleSheet(qdarkstyle.load_stylesheet())
+app.setStyleSheet(qdarkstyle.load_stylesheet())
 
 class TaskView(QMainWindow):
     def __init__(self):
