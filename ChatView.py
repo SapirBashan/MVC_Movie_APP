@@ -62,11 +62,11 @@ class ChatView(QWidget):
         # Use QTimer and async so that while waiting for the response from the API, the GUI does not freeze
         # and call the function loadingAnimation to show the user that the program is working
         self.loadingAnimation(True)
-        QTimer.singleShot(1000, lambda: self.handleRecommendation("GPT-3-Ultra"))
+        QTimer.singleShot(100, lambda: self.handleRecommendation("GPT-3-Ultra"))
 
     def chat_gpt_devincie_button_clicked(self):
         self.loadingAnimation(True)
-        QTimer.singleShot(1000, lambda: self.handleRecommendation("GPT-Devincie"))
+        QTimer.singleShot(100, lambda: self.handleRecommendation("GPT-Devincie"))
 
     def handleRecommendation(self, model):
         recommendation = self.controller.getMovieRecommendationController(model)
@@ -77,7 +77,7 @@ class ChatView(QWidget):
         if loading:
             self.loading_timer = QTimer(self)
             self.loading_timer.timeout.connect(self.updateLoadingText)
-            self.loading_timer.start(200)  # 200 milliseconds interval for updating text
+            self.loading_timer.start(50)  # 200 milliseconds interval for updating text
         else:
             self.loading_timer.stop()
             self.movie_recommendation_label.setText("")
