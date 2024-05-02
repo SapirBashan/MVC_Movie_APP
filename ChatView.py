@@ -1,4 +1,5 @@
-from PyQt6.QtCore import Qt
+import time
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QPushButton, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QFrame, QScrollArea
 from PyQt6.QtGui import QFont
 
@@ -58,9 +59,33 @@ class ChatView(QWidget):
         self.controller = controller
 
     def chat_gpt3_button_clicked(self):
-        recommendation = self.controller.getMovieRecommendationController("GPT-3-Ultra")
-        self.movie_recommendation_label.setText(recommendation)
+        # Use QTimer and async so that while waiting for the response from the API, the GUI does not freeze
+        # and call the function loadingAnimation to show the user that the program is working
+        self.loadingAnimation(True)
+        QTimer.singleShot(1000, lambda: self.handleRecommendation("GPT-3-Ultra"))
 
     def chat_gpt_devincie_button_clicked(self):
-        recommendation = self.controller.getMovieRecommendationController("GPT-Devincie")
+        self.loadingAnimation(True)
+        QTimer.singleShot(1000, lambda: self.handleRecommendation("GPT-Devincie"))
+
+    def handleRecommendation(self, model):
+        recommendation = self.controller.getMovieRecommendationController(model)
+        self.loadingAnimation(False)
         self.movie_recommendation_label.setText(recommendation)
+
+    def loadingAnimation(self, loading):
+        if loading:
+            self.loading_timer = QTimer(self)
+            self.loading_timer.timeout.connect(self.updateLoadingText)
+            self.loading_timer.start(200)  # 200 milliseconds interval for updating text
+        else:
+            self.loading_timer.stop()
+            self.movie_recommendation_label.setText("")
+
+    def updateLoadingText(self):
+        self.movie_recommendation_label.setText("Loading Information")
+        text = self.movie_recommendation_label.text()
+        if text.endswith("...."):
+            self.movie_recommendation_label.setText("Loading Information")
+        else:
+            self.movie_recommendation_label.setText(text + ".")
