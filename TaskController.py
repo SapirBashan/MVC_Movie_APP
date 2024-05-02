@@ -16,8 +16,7 @@ class TodoController:
         #if the movie is removed successfully, update the movie list
         if self.model.removeMovie(movie_name):
             self.GetAllMoviesController()
-            
-        
+            return True
 
     def searchMovieController(self, movie_name):
         return self.model.fetchMovieData(movie_name)
@@ -34,3 +33,23 @@ class TodoController:
             relevant_movies_data = [movie for movie in movies_data if movie['poster'] == movie_poster_url]
         if relevant_movies_data:
             return relevant_movies_data
+        
+    def getAllTheMovieTitlesController(self):
+        #this function gets all the movie titles from the model and 
+        #returns them as a string list with a , separator beetwen each title
+        movies_data = self.model.GetAllMovies()
+        if movies_data:
+            movie_titles = [movie['title'] for movie in movies_data]
+            return ",".join(movie_titles)
+        return ""
+    
+    def getMovieRecommendationController(self, ModelName):
+        #this function gets a movie name and returns a movie recommendation
+        #based on the movie name
+        movieTitles = self.getAllTheMovieTitlesController()
+        if(movieTitles != ""):
+            movieRecommendation = self.model.GetMovieRecommendation(ModelName, movieTitles)
+            return movieRecommendation
+
+            
+

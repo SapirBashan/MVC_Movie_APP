@@ -48,3 +48,26 @@ class TodoModel:
             return response.json()
         else:
             return None
+        
+    #Get /Get the movie recommendation based on the movie name from the API
+    #this is the API call for the Chat GPT-3-Ultra - https://localhost:7276/api/movieRecommendation?question={movie_name}
+    #this is the API call for the Chat GPT-Devincie - https://localhost:7276/GetMovieSuggestions?movies={movie_name}
+    def GetMovieRecommendation(self, ModelName, movie_Title):
+        if(ModelName == "GPT-3-Ultra"):
+            response = requests.get(f'https://localhost:7276/api/movieRecommendation?question={movie_Title}', verify=False)
+            if response.status_code == 200:
+                if response.text == "":
+                    return "No movie recommendation found"
+                return response.text
+            else:
+                return None
+        elif(ModelName == "GPT-Devincie"):
+            response = requests.get(f'https://localhost:7276/GetMovieSuggestions?movies={movie_Title}', verify=False)
+            if response.status_code == 200:
+                if response.text == "":
+                    return "No movie recommendation found"
+                return response.text
+            else:
+                return None
+        else:
+            return None

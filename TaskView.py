@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow, QTabWidget, QApplication, QWidget, QVBoxLayout
+#######################################################################################
 import qdarkstyle
 
 from ListView import TodoView
@@ -6,6 +7,7 @@ from ChatView import ChatView
 from ImaggaView import ImaggaView
 
 app = QApplication([])
+############################################################################################
 app.setStyleSheet(qdarkstyle.load_stylesheet())
 
 class TaskView(QMainWindow):
@@ -43,6 +45,8 @@ class TaskView(QMainWindow):
     def setController(self, controller):
         self.controller = controller
         self.todoView.setController(controller)
+        self.chatView.setController(controller)  # set controller for ChatView
+
 
     def show(self):
         self.showMaximized()

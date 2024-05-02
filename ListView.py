@@ -1,13 +1,12 @@
-import requests
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout, QScrollArea, QSizePolicy, QApplication,QHBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QGridLayout, QScrollArea, QSizePolicy, QApplication, QHBoxLayout
 from PyQt6.QtGui import QPixmap, QFont
 from PyQt6.QtCore import Qt
+import requests
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-class TodoView(QMainWindow): 
+class TodoView(QMainWindow):
     def __init__(self):
         super().__init__()
         self.central_widget = QWidget(self)
@@ -44,8 +43,9 @@ class TodoView(QMainWindow):
 
         self.movieLabel = QLabel(self)
         self.movieLabel.setFont(QFont('Arial', 14))
+        self.movieLabel.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)  # Enable text selection with mouse
 
-        self.posterLayout = QGridLayout()  
+        self.posterLayout = QGridLayout()
 
         self.posterWidget = QWidget()
         self.posterWidget.setLayout(self.posterLayout)
@@ -85,7 +85,7 @@ class TodoView(QMainWindow):
 
         if movie_details == "":
             movie_details = "No movie data"
-        
+
         self.movieLabel.setWordWrap(True)
         self.movieLabel.setText(movie_details)
 
