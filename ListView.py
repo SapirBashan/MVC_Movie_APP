@@ -153,6 +153,9 @@ class TodoView(QMainWindow):
         if hasattr(self, 'commentEdit'):
             self.commentEdit.hide()
         movie_name = self.movieEdit.text()
+        if not movie_name:
+            self.movieLabel.setText("Please enter a movie name")
+            return
         movie_data = self.controller.searchMovieController(movie_name)
         if self.controller.addMovieController(movie_data):
             self.movieLabel.setText(f"Movie {movie_name} added successfully")
@@ -162,6 +165,9 @@ class TodoView(QMainWindow):
     def removeMovie(self):
         if hasattr(self, 'commentEdit'):
             self.commentEdit.hide()
+        if not movie_name:
+            self.movieLabel.setText("Please enter a movie name")
+            return
         movie_name = self.movieEdit.text()
         if self.controller.removeMovieController(movie_name):
             self.movieLabel.setText(f"Movie {movie_name} removed successfully")

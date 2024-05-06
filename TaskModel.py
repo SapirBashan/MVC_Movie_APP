@@ -27,7 +27,7 @@ class TodoModel:
 
     #fetch from API
     def fetchMovieData(self, movie_name):
-        response = requests.get(f'https://localhost:7276/Movie/{movie_name}', verify=False)
+        response = requests.get(f'https://localhost:7276/Omdb/{movie_name}', verify=False)
         if response.status_code == 200:
             return response.json()
         else:
