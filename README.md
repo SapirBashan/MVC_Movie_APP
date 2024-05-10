@@ -9,6 +9,9 @@ https://github.com/SapirBashan/PyQt_frontend_Movie_APP/assets/99900812/7f7a8038-
 ##Link to the backend C# server
 https://github.com/SapirBashan/Server_Movie_App_API/tree/master
 
+![image](https://github.com/SapirBashan/PyQt_frontend_Movie_APP/assets/99900812/75e5c394-73bc-4a2a-974a-c1e3849f5d68)
+
+
 ## Features
 
 - **CRUD Operations**: Perform Create, Read, Update, and Delete operations on movies.
