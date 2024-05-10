@@ -63,6 +63,9 @@ class TodoView(QMainWindow):
         self.posterWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.controller = None
 
+        #bool lable to show if in search mode
+        self.searchMode = False
+
     def updateMovieUI(self, movie_data, flag):
         if hasattr(self, 'commentEdit'):
             self.commentEdit.hide()
@@ -123,8 +126,9 @@ class TodoView(QMainWindow):
             if pixmap:
                 label = QLabel()
                 label.setPixmap(pixmap)
-                label.mousePressEvent = lambda event, url=poster_url: self.showMovieDetails(url)  # Double-click event handler
-                label.mouseDoubleClickEvent = lambda event, url=poster_url: self.addComment(url)  # Right-click event handler
+                if self.searchMode == False:
+                    label.mousePressEvent = lambda event, url=poster_url: self.showMovieDetails(url)  # Double-click event handler
+                    label.mouseDoubleClickEvent = lambda event, url=poster_url: self.addComment(url)  # Right-click event handler
 
                 self.posterLayout.addWidget(label, row, col)
                 col += 1
@@ -152,6 +156,7 @@ class TodoView(QMainWindow):
     def addMovie(self):
         if hasattr(self, 'commentEdit'):
             self.commentEdit.hide()
+        self.searchMode = False
         movie_name = self.movieEdit.text()
         if not movie_name:
             self.movieLabel.setText("Please enter a movie name")
@@ -165,6 +170,8 @@ class TodoView(QMainWindow):
     def removeMovie(self):
         if hasattr(self, 'commentEdit'):
             self.commentEdit.hide()
+        #make the movie name a string always
+        movie_name = str(self.movieEdit.text())
         if not movie_name:
             self.movieLabel.setText("Please enter a movie name")
             return
@@ -177,6 +184,7 @@ class TodoView(QMainWindow):
     def searchMovie(self):
         if hasattr(self, 'commentEdit'):
             self.commentEdit.hide()
+        self.searchMode = True
         movie_name = self.movieEdit.text()
         movie_data = self.controller.searchMovieController(movie_name)
         if movie_data:
@@ -236,6 +244,7 @@ class TodoView(QMainWindow):
 
     
     def refresh(self):
+        self.searchMode = False
         self.controller.GetAllMoviesController()
         self.movieLabel.setText("Movies refreshed successfully")
         self.movieEdit.clear()

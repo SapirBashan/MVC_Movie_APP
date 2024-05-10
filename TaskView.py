@@ -1,15 +1,16 @@
 from PyQt6.QtWidgets import QMainWindow, QTabWidget, QApplication, QWidget, QVBoxLayout
-#######################################################################################
 import qdarkstyle
-
 from ListView import TodoView
 from ChatView import ChatView
 
+
 app = QApplication([])
-############################################################################################
 app.setStyleSheet(qdarkstyle.load_stylesheet())
 
+
 class TaskView(QMainWindow):
+    # this magic function is used to initialize the main window 
+    # it works like a constructor
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Task Manager")

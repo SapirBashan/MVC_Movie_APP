@@ -17,6 +17,11 @@ class TodoModel:
             "plot": movie_data['plot'],
             "imdbRating": movie_data['imdbRating']
         }
+        #verify=False is used to ignore the SSL certificate verification
+        #the SSL certificate verification is a mechinisam that allows the client to verify the server's identity
+        #the server sends the client a certificate to verify its identity
+        #the client checks the certificate against a list of trusted certificates
+        #if the certificate is trusted, the client sends a message to the server
         response = requests.post(f'https://localhost:7276/api/MovieValue', json=formatted_data, verify=False)
         return response.status_code == 201  # Check for the correct status code for creation
 

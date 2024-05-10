@@ -4,6 +4,7 @@ from TaskModel import TodoModel
 from PyQt6.QtWidgets import QApplication
 import sys
 
+# Create the main function to initialize the application
 def main():
     app = QApplication(sys.argv)
     model = TodoModel()
