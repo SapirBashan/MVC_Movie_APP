@@ -3,13 +3,10 @@
 
 This Movie Manager application is designed to help users manage their movie collection by integrating with external APIs for movie data retrieval and leveraging AI capabilities for generating movie recommendations. The backend of the application is powered by a C# server that consolidates HTTP requests for all APIs into one place, providing a seamless experience for users.
 
-
-https://github.com/SapirBashan/PyQt_frontend_Movie_APP/assets/99900812/7f7a8038-b390-4048-86f2-5485834bee5f
-
 ##Link to the backend C# server
 https://github.com/SapirBashan/Server_Movie_App_API/tree/master
 
-![image](https://github.com/SapirBashan/PyQt_frontend_Movie_APP/assets/99900812/75e5c394-73bc-4a2a-974a-c1e3849f5d68)
+https://github.com/SapirBashan/PyQt_frontend_Movie_APP/assets/99900812/7f7a8038-b390-4048-86f2-5485834bee5f
 
 
 ## Features
